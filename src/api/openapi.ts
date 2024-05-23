@@ -20,11 +20,13 @@ export const KnowledgeCutOffDate: Record<string, string> = {
   "gpt-4-0125-preview": "2023-12",
   "gpt-4-vision-preview": "2023-04",
   "gpt-4-turbo-2024-04-09": "2023-12", 
-  "gpt-4-turbo": "2023-12",
+  "gpt-4o-2024-05-13": "2023-10", 
+  "gpt-4o": "2023-10", 
+  "gpt-4-turbo": "2023-12", 
   "gpt-4-turbo-preview": "2023-12",
   "claude-3-opus-20240229": "2023-08",
   "claude-3-sonnet-20240229": "2023-08",
-  "claude-3-haiku-20240229": "2023-08",
+  "claude-3-haiku-20240307": "2023-08",
   "gemini-pro": "2023-12",
   "gemini-pro-vision": "2023-12",
   "gemini-pro-1.5": "2024-04"
@@ -279,7 +281,7 @@ return DEFAULT_SYSTEM_TEMPLATE;
 }
 export const subModel= async (opt: subModelType)=>{
     //
-    const model= opt.model?? ( gptConfigStore.myData.model?gptConfigStore.myData.model: "gpt-3.5-turbo");
+    let model= opt.model?? ( gptConfigStore.myData.model?gptConfigStore.myData.model: "gpt-3.5-turbo");
     let max_tokens= gptConfigStore.myData.max_tokens;
     let temperature= 0.5;
     let top_p= 1;
@@ -294,6 +296,11 @@ export const subModel= async (opt: subModelType)=>{
         max_tokens= gStore.max_tokens;
     }
     if(model=='gpt-4-vision-preview' && max_tokens>2048) max_tokens=2048;
+
+    //gptServerStore.myData.GPTS_GX
+    if( gptServerStore.myData.GPTS_GX ){
+        model= model.replace('gpt-4-gizmo-','')
+    }
 
     let body ={
             max_tokens ,
@@ -500,7 +507,7 @@ const getModelMax=( model:string )=>{
         return 16;
     }else if( model.indexOf('32k')>-1  ){
         return 32;
-    }else if( model.indexOf('gpt-4-turbo')>-1  ){
+    }else if( model.indexOf('gpt-4-turbo')>-1||  model.indexOf('gpt-4o')>-1 ){
         return 128; 
     }else if( model.indexOf('64k')>-1  ){
         return 64;
